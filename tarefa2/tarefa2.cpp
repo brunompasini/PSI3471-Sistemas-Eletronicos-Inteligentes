@@ -14,7 +14,7 @@ Mat_<COR> pintaVermelho(Mat_<COR> a, int ls, int cs, int t)
         q.pop(); //(3) //retira primeiro elemento da fila q
         int c = q.front();//c recebe quem está na frente da fila
         q.pop(); //(3) //retira primeiro elemento da fila
-        if (distancia(amarelo, a(l, c)) < t) //se for branco
+        if (distancia(amarelo, b(l, c)) < t) //se for amarelo
         {                             //(4)
             b(l, c) = COR(0, 0, 255); //(5)
             q.push(l - 1);
@@ -33,6 +33,6 @@ int main()
 {
     Mat_<COR> a;
     le(a, "elefante.jpg");
-    Mat_<COR> b = pintaVermelho(a, 120, 120, 10); //semente é pixel localizado em (120,120)
+    Mat_<COR> b = pintaVermelho(a, 120, 140, 100); //semente é pixel localizado em (120,120)
     imp(b, "elefante_vermelho.png");
 }

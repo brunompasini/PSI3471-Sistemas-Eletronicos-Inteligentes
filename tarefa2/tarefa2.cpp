@@ -1,4 +1,7 @@
 //tarefa2.cpp
+//Tarefa 2 - Pinta Vermelho
+//Pedro Henrique Gianjoppe dos Santos - 10774055
+//Bruno Mucha Pasini - 10845791
 #include <cekeikon.h>
 #include <queue>
 Mat_<COR> pintaVermelho(Mat_<COR> a, int ls, int cs, int t)

@@ -1,5 +1,7 @@
-// tarefa5.cpp
-#include <cekeikon.h>
+//tarefa5.cpp
+//Tarefa 5 - Detecta Ursinho
+//Pedro Henrique Gianjoppe dos Santos - 10774055
+//Bruno Mucha Pasini - 10845791#include <cekeikon.h>
 int main()
 {
     Mat_<FLT> a;

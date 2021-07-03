@@ -1,6 +1,7 @@
 //tarefa8.cpp
-//11 - FlaNN
-//Usa OpenCV2
+//Tarefa 8
+//Pedro Henrique Gianjoppe dos Santos - 10774055
+//Bruno Mucha Pasini - 10845791
 #include <cekeikon.h>
 
 Mat_<GRY> mediana(Mat_<GRY> a)

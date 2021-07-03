@@ -1,4 +1,7 @@
-//cvvizinho.cpp pos2018 - usa funcao resize do OpenCV
+//tarefa6.cpp
+//Tarefa 6
+//Pedro Henrique Gianjoppe dos Santos - 10774055
+//Bruno Mucha Pasini - 10845791
 #include <cekeikon.h>
 int main()
 {

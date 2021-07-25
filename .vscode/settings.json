@@ -4,6 +4,11 @@
         "deque": "cpp",
         "xstring": "cpp",
         "cmath": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "tuple": "cpp",
+        "utility": "cpp",
+        "algorithm": "cpp",
+        "limits": "cpp",
+        "ostream": "cpp"
     }
 }

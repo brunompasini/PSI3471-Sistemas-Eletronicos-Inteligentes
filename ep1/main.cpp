@@ -25,6 +25,7 @@ int main(int argc, char **argv)
     Mat_<FLT> A; //A = canhoto redimensionado
     double fator = 750 / canhoto.cols;
     resize(canhoto, A, Size(0, 0), fator, fator, INTER_LANCZOS4);
+    //OBS: NÃO FUNCIONA SE IMAGEM TIVER COLUNAS > 750
 
     //A = canhoto redimensionado e Q = canhoto padrão
     //3) Colocar A no centro de uma moldura cinza (128/255) 310x1150
@@ -140,6 +141,8 @@ int main(int argc, char **argv)
     cout << "melhorModelo = 2"
          << ", corr = " << corr_max << ", graus = " << rotacao[irotacao] << ", fator = " << escalas[iescalas] << endl;
 
+    //FALTA SELECIONAR MELHOR MODELO E IMPRIMIR DESLOCAMENTO!
+
     //8) Imprimir imagem inicial
     imp(canhoto, argv[1]);
 
@@ -149,18 +152,25 @@ int main(int argc, char **argv)
     Mat_<double> m = getRotationMatrix2D(Point2f(Q.cols / 2, Q.rows / 2), rotacao[irotacao], 1);
     warpAffine(Q, Q, m, Q.size(), INTER_LINEAR, BORDER_CONSTANT, Scalar(cinza));
 
-    Mat_<COR> Q_cor;
-    converte(Q, Q_cor);
+    ver = ceil((A_moldura.rows - Q.rows) / 2);
+    hor = ceil((A_moldura.cols - Q.cols) / 2);
+
+    copyMakeBorder(Q, Q, ver, ver, hor, hor, BORDER_CONSTANT, Scalar(cinza));
+
+    imp(Q, "Q.png");
+
+    Mat_<COR> A_cor;
+    converte(A_moldura, A_cor);
 
     for (int l = 0; l < Q.rows; l++) {
         for (int c = 0; c < Q.cols; c++) {
             if (Q(l,c) < 0.2 ) { //foi utilizada uma tolerância Epsilon = 0.2
-                Q_cor(l, c)[2] = 255; //componente vermelho
-            } else if (Q(l,c) > cinza - 0.2 || Q(l,c) < cinza + 0.2) {
-                Q_cor(l, c)[0] = 255; //componente azul
+                A_cor(l, c)[2] = 255; //componente vermelho
+            } else if (Q(l,c) > cinza - 0.2 && Q(l,c) < cinza + 0.2) {
+                A_cor(l, c)[0] = 255; //componente azul
             }
         }
     }
 
-    imp(Q_cor, argv[2]);
+    imp(A_cor, argv[2]);
 }

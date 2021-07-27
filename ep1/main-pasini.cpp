@@ -149,47 +149,18 @@ int main(int argc, char **argv)
     Mat_<double> m = getRotationMatrix2D(Point2f(Q.cols / 2, Q.rows / 2), rotacao[irotacao], 1);
     warpAffine(Q, Q, m, Q.size(), INTER_LINEAR, BORDER_CONSTANT, Scalar(cinza));
 
-    //cout << "Q.rows = " << Q.rows << " Q.cols = " << Q.cols << endl;
-    //cout << "canhotoA.rows = " << A_moldura.rows << " canhotoA.cols = " << A_moldura.cols << endl;
-
-    Mat_<COR> A_cor;
-    converte(A_moldura, A_cor);
-
     Mat_<COR> Q_cor;
     converte(Q, Q_cor);
 
-    int cor_ver = ceil((A_cor.rows - Q_cor.rows) / 2);
-    int cor_hor = ceil((A_cor.cols - Q_cor.cols) / 2);
-
-    copyMakeBorder(Q_cor, Q_cor, cor_ver, cor_ver, cor_hor, cor_hor, BORDER_CONSTANT, Scalar(255, 128, 128));
-    
-
-    Mat_<FLT> Q_cinza = Q.clone();
-    copyMakeBorder(Q_cinza, Q_cinza, cor_ver, cor_ver, cor_hor, cor_hor, BORDER_CONSTANT, Scalar(255, 128, 128));
-
-
-    Mat_<COR> A_cor_2 = A_cor(Range(0,Q_cor.rows), Range(0,Q_cor.cols));
-
-
-    //resize(A_cor, A_cor, Size(Q.cols, Q.rows), INTER_NEAREST);
-
-
-    for (int l = 0; l < Q_cinza.rows; l++) {
-        for (int c = 0; c < Q_cor.cols; c++) {
-            if (Q_cinza(l,c) < 0.2 ) { //foi utilizada uma tolerância Epsilon = 0.2
-                //A_cor_2(l, c)[2] = 255; //componente vermelho
-                A_cor_2(l, c) = COR(0,0,255);
-            } else if (Q_cinza(l,c) > cinza - 0.2 || Q_cinza(l,c) < cinza + 0.2) {
-                A_cor_2(l, c)[0] = 255; //componente azul
+    for (int l = 0; l < Q.rows; l++) {
+        for (int c = 0; c < Q.cols; c++) {
+            if (Q(l,c) < 0.2 ) { //foi utilizada uma tolerância Epsilon = 0.2
+                Q_cor(l, c)[2] = 255; //componente vermelho
+            } else if (Q(l,c) > cinza - 0.2 || Q(l,c) < cinza + 0.2) {
+                Q_cor(l, c)[0] = 255; //componente azul
             }
         }
     }
 
-    cout << "Qcor rows: " << Q_cor.rows << " cols: " << Q_cor.cols << endl;
-
-
-    
-
     imp(Q_cor, argv[2]);
-    imp(A_cor_2, "amol.png");
 }

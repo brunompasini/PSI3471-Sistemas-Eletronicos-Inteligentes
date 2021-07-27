@@ -9,6 +9,8 @@
         "utility": "cpp",
         "algorithm": "cpp",
         "limits": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "*.tcc": "cpp",
+        "string": "cpp"
     }
 }

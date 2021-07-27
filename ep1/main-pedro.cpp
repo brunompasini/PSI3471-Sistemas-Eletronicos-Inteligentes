@@ -99,14 +99,6 @@ int main(int argc, char **argv)
 
             Mat_<FLT> corr_temp = matchTemplateSame(A_moldura, q, CV_TM_CCORR);
 
-            if (i == 8 && j == 10) //Apenas para fase de testes (colocar em i = iescalas e j = irotacao )
-            {
-                imp(Q_temp, "Q_temp.png");
-                imp(corr_temp, "corr_temp.png");
-                //cout << "corr_temp.rows = " << corr_temp.rows << endl;
-                //cout << "corr_temp.cols = " << corr_temp.cols << endl;
-            }
-
             //calculo do max
             double min, max;
 
@@ -116,9 +108,9 @@ int main(int argc, char **argv)
             corr_m2_max[ind] = max;
             //cout << "corr_m2_max = " << corr_m2_max[ind] << endl;
 
-            deslocamentox_m2[ind] = maxLoc.x - corr_temp.cols / 2;
+            deslocamentox_m2[ind] = maxLoc.x - corr_temp.cols / 2.0;
 
-            deslocamentoy_m2[ind] = maxLoc.y - corr_temp.rows / 2;
+            deslocamentoy_m2[ind] = maxLoc.y - corr_temp.rows / 2.0;
 
             ind++;
         }
@@ -148,14 +140,6 @@ int main(int argc, char **argv)
 
             Mat_<FLT> corr_temp = matchTemplateSame(A_moldura, q, CV_TM_CCORR);
 
-            if (i == 8 && j == 10) //Apenas para fase de testes (colocar em i = iescalas e j = irotacao )
-            {
-                imp(Q_temp, "Q_temp.png");
-                imp(corr_temp, "corr_temp.png");
-                //cout << "corr_temp.rows = " << corr_temp.rows << endl;
-                //cout << "corr_temp.cols = " << corr_temp.cols << endl;
-            }
-
             //calculo do max
             double min, max;
 
@@ -165,9 +149,9 @@ int main(int argc, char **argv)
             corr_m3_max[ind] = max;
             //cout << "corr_m3_max = " << corr_m3_max[ind] << endl;
 
-            deslocamentox_m3[ind] = maxLoc.x - corr_temp.cols / 2;
+            deslocamentox_m3[ind] = maxLoc.x - corr_temp.cols / 2.0;
 
-            deslocamentoy_m3[ind] = maxLoc.y - corr_temp.rows / 2;
+            deslocamentoy_m3[ind] = maxLoc.y - corr_temp.rows / 2.0;
 
             ind++;
         }
@@ -197,14 +181,6 @@ int main(int argc, char **argv)
 
             Mat_<FLT> corr_temp = matchTemplateSame(A_moldura, q, CV_TM_CCORR);
 
-            if (i == 8 && j == 10) //Apenas para fase de testes (colocar em i = iescalas e j = irotacao )
-            {
-                imp(Q_temp, "Q_temp.png");
-                imp(corr_temp, "corr_temp.png");
-                //cout << "corr_temp.rows = " << corr_temp.rows << endl;
-                //cout << "corr_temp.cols = " << corr_temp.cols << endl;
-            }
-
             //calculo do max
             double min, max;
 
@@ -214,9 +190,9 @@ int main(int argc, char **argv)
             corr_m4_max[ind] = max;
             //cout << "corr_m4_max = " << corr_m4_max[ind] << endl;
 
-            deslocamentox_m4[ind] = maxLoc.x - corr_temp.cols / 2;
+            deslocamentox_m4[ind] = maxLoc.x - corr_temp.cols / 2.0;
 
-            deslocamentoy_m4[ind] = maxLoc.y - corr_temp.rows / 2;
+            deslocamentoy_m4[ind] = maxLoc.y - corr_temp.rows / 2.0;
 
             ind++;
         }
@@ -225,7 +201,6 @@ int main(int argc, char **argv)
     //6) Pegar a maior correção entre os 3 modelos assim como seu índice i
     //      Imprimir saída do formato : " Maior correlacao entre m2_001.jpg e m2.pgm: 0.147 "
     //indice(corr_m2_med) / 17: Quociente = i, Resto = j
-    //(A FAZER! Por enquanto estamos testando apenas o modelo m2)
 
     double m2_corr_max = corr_m2_max[0];
     double m3_corr_max = corr_m3_max[0];
@@ -261,8 +236,8 @@ int main(int argc, char **argv)
     //7) Coletar distorção de escala (fator(i)) e de rotacao(graus(i)) e deslocamento (desloc(i,j))
     //      Imprimir saída do formato : " melhorModelo=2 corr= 0.147 graus= 0.750 fator= 1.006 desloc(x,y)=[ -2, -2] "
 
-    int deslocamentox[21 * 17];
-    int deslocamentoy[21 * 17];
+    int deslocamentox;
+    int deslocamentoy;
     int modelo = 0;
     int icorr_max;
     double corr_max;
@@ -275,47 +250,37 @@ int main(int argc, char **argv)
             //cout << m2_corr_max;
             corr_max = m2_corr_max;
             icorr_max = m2_icorr_max;
-            for (int n = 0; n < 21 * 17; n++)
-            {
-                deslocamentox[n] = deslocamentox_m2[n];
-                deslocamentoy[n] = deslocamentoy_m2[n];
-            }
+            deslocamentox = deslocamentox_m2[icorr_max];
+            deslocamentoy = deslocamentoy_m2[icorr_max];
             moldura = m2_moldura.clone();
             modelo = 2;
         }
-        else if(m3_corr_max > m2_corr_max)
+    }
+    
+    if (m3_corr_max > m2_corr_max)
+    {
+        if (m3_corr_max > m4_corr_max)
         {
-            if (m3_corr_max > m4_corr_max)
-            {
-                //cout << m3_corr_max;
-                cout << m3_corr_max;
-                corr_max = m3_corr_max;
-                icorr_max = m3_icorr_max;
-                for (int n = 0; n < 21 * 17; n++)
-                {
-                    deslocamentox[n] = deslocamentox_m3[n];
-                    deslocamentoy[n] = deslocamentoy_m3[n];
-                }
-                moldura = m3_moldura.clone();
-                modelo = 3;
-            }
+            //cout << m3_corr_max;
+            corr_max = m3_corr_max;
+            icorr_max = m3_icorr_max;
+            deslocamentox = deslocamentox_m3[icorr_max];
+            deslocamentoy = deslocamentoy_m3[icorr_max];
+            moldura = m3_moldura.clone();
+            modelo = 3;
         }
-        else if(m4_corr_max > m3_corr_max)
+    }
+    if (m4_corr_max > m3_corr_max)
+    {
+        if (m4_corr_max > m2_corr_max)
         {
-            if (m4_corr_max > m2_corr_max)
-            {
-                //cout << m4_corr_max;
-                cout << m4_corr_max;
-                corr_max = m4_corr_max;
-                icorr_max = m4_icorr_max;
-                for (int n = 0; n < 21 * 17; n++)
-                {
-                    deslocamentox[n] = deslocamentox_m4[n];
-                    deslocamentoy[n] = deslocamentoy_m4[n];
-                }
-                moldura = m4_moldura.clone();
-                modelo = 4;
-            }
+            //cout << m4_corr_max;
+            corr_max = m4_corr_max;
+            icorr_max = m4_icorr_max;
+            deslocamentox = deslocamentox_m4[icorr_max];
+            deslocamentoy = deslocamentoy_m4[icorr_max];
+            moldura = m4_moldura.clone();
+            modelo = 4;
         }
     }
 
@@ -323,11 +288,11 @@ int main(int argc, char **argv)
     int iescalas = icorr_max / 17;
     int irotacao = icorr_max % 17;
 
-    cout << "iescalas = " << iescalas << endl;
-    cout << "irotacao = " << irotacao << endl;
+    //cout << "iescalas = " << iescalas << endl;
+    //cout << "irotacao = " << irotacao << endl;
 
     cout << "melhorModelo = " << modelo << ", corr = " << corr_max << ", graus = " << rotacao[irotacao] << ", fator = " << escalas[iescalas] << ", desloc(x,y) = "
-         << "[ " << deslocamentox[icorr_max] << ", " << deslocamentoy[icorr_max] << "]" << endl;
+         << "[ " << deslocamentox << ", " << deslocamentoy << "]" << endl;
 
     //FALTA SELECIONAR MELHOR MODELO E IMPRIMIR DESLOCAMENTO!
 
@@ -367,15 +332,15 @@ int main(int argc, char **argv)
         {
             if (Q_cinza(l, c) == 0) // Pintando de vermelho
             {                       //foi utilizada uma tolerância Epsilon = 0.1
-                A_cor_2(l - deslocamentox[icorr_max], c - deslocamentoy[icorr_max])[0] /= 2;
-                A_cor_2(l - deslocamentox[icorr_max], c - deslocamentoy[icorr_max])[1] /= 2;
-                A_cor_2(l - deslocamentox[icorr_max], c - deslocamentoy[icorr_max])[2] = 255; //componente vermelha
+                A_cor_2(l - deslocamentox, c - deslocamentoy)[0] /= 2;
+                A_cor_2(l - deslocamentox, c - deslocamentoy)[1] /= 2;
+                A_cor_2(l - deslocamentox, c - deslocamentoy)[2] = 255; //componente vermelha
             }
             else if (Q_cinza(l, c) != 1) //Pintando de azul
             {
-                A_cor_2(l - deslocamentox[icorr_max], c - deslocamentoy[icorr_max])[0] = 255; //componente azul
-                A_cor_2(l - deslocamentox[icorr_max], c - deslocamentoy[icorr_max])[1] /= 2;
-                A_cor_2(l - deslocamentox[icorr_max], c - deslocamentoy[icorr_max])[2] /= 2;
+                A_cor_2(l - deslocamentox, c - deslocamentoy)[0] = 255; //componente azul
+                A_cor_2(l - deslocamentox, c - deslocamentoy)[1] /= 2;
+                A_cor_2(l - deslocamentox, c - deslocamentoy)[2] /= 2;
             }
         }
     }
@@ -385,6 +350,5 @@ int main(int argc, char **argv)
     imp(A_cor, "A_cor.png");
 
     imp(A_cor_2, argv[2]);
+    // */
 }
-
-// */

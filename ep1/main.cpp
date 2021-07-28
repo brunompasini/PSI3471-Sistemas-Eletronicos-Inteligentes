@@ -10,10 +10,10 @@
 Mat_<float> dcReject(Mat_<float> a, float dontcare)
 {
     // Elimina nivel DC (subtrai media) com dontcare
-    Mat_<uchar> naodontcare = (a != dontcare);
+    Mat_<uchar> naodontcare = (a <= dontcare - 0.1 || a >= dontcare + 0.1);
     Scalar media = mean(a, naodontcare);
     subtract(a, media[0], a, naodontcare);
-    Mat_<uchar> simdontcare = (a == dontcare);
+    Mat_<uchar> simdontcare = (a > dontcare - 0.1 && a < dontcare + 0.1);
     subtract(a, dontcare, a, simdontcare);
     return a;
 }

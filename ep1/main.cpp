@@ -7,15 +7,30 @@
 #include <cmath>
 
 
-Mat_<float> dcReject(Mat_<float> a, float dontcare)
+Mat_<FLT> newDcReject(Mat_<FLT> a, float dontcare)
 {
-    // Elimina nivel DC (subtrai media) com dontcare
-    Mat_<uchar> naodontcare = (a <= dontcare - 0.1 || a >= dontcare + 0.1);
-    Scalar media = mean(a, naodontcare);
-    subtract(a, media[0], a, naodontcare);
-    Mat_<uchar> simdontcare = (a > dontcare - 0.1 && a < dontcare + 0.1);
-    subtract(a, dontcare, a, simdontcare);
-    return a;
+    float epsilon = 0.1;
+    Mat_<FLT> b = a.clone();
+    double sum = 0.0;
+    int count = 0;
+
+    for (int i = 0; i < b.total(); i++){
+        if (b(i)-epsilon < dontcare && b(i)+epsilon > dontcare) {} // faz nada
+        else {
+            sum += b(i);
+            count++;
+        }
+    }
+
+    double mean = sum / count;
+    for (int j = 0; j < b.total(); j++){
+        if (b(j)-epsilon < dontcare && b(j)+epsilon > dontcare) {
+            b(j) = 0.0;
+        } else {
+            b(j) -= mean;
+        }
+    }
+    return b;
 }
 
 //1) Ler imagem do canhoto como Mat_ <FLT>
@@ -28,8 +43,8 @@ int main(int argc, char **argv)
         erro("Erro: Numero de argumentos invalido");
     }
     string pathCanhoto;
-    pathCanhoto.append("POD/");
-    pathCanhoto.append(argv[1]);
+    //pathCanhoto.append("POD/");
+    //pathCanhoto.append(argv[1]);
     Mat_<FLT> canhoto;
     le(canhoto, argv[1]);
 
@@ -108,7 +123,7 @@ int main(int argc, char **argv)
 
             warpAffine(Q_temp, Q_temp, m, Q_temp.size(), INTER_LINEAR, BORDER_CONSTANT, Scalar(cinza));
 
-            Mat_<FLT> q = somaAbsDois(dcReject(Q_temp));
+            Mat_<FLT> q = somaAbsDois(newDcReject(Q_temp, cinza));
 
             Mat_<FLT> corr_temp = matchTemplateSame(A_moldura, q, CV_TM_CCORR);
 
@@ -149,7 +164,7 @@ int main(int argc, char **argv)
 
             warpAffine(Q_temp, Q_temp, m, Q_temp.size(), INTER_LINEAR, BORDER_CONSTANT, Scalar(cinza));
 
-            Mat_<FLT> q = somaAbsDois(dcReject(Q_temp));
+            Mat_<FLT> q = somaAbsDois(newDcReject(Q_temp, cinza));
 
             Mat_<FLT> corr_temp = matchTemplateSame(A_moldura, q, CV_TM_CCORR);
 
@@ -190,7 +205,7 @@ int main(int argc, char **argv)
 
             warpAffine(Q_temp, Q_temp, m, Q_temp.size(), INTER_LINEAR, BORDER_CONSTANT, Scalar(cinza));
 
-            Mat_<FLT> q = somaAbsDois(dcReject(Q_temp));
+            Mat_<FLT> q = somaAbsDois(newDcReject(Q_temp, cinza));
 
             Mat_<FLT> corr_temp = matchTemplateSame(A_moldura, q, CV_TM_CCORR);
 
@@ -242,9 +257,9 @@ int main(int argc, char **argv)
         }
     }
 
-    cout << "Maior correlacao entre " << argv[1] << "e m2.pgm: " << m2_corr_max << endl;
-    cout << "Maior correlacao entre " << argv[1] << "e m3.pgm: " << m3_corr_max << endl;
-    cout << "Maior correlacao entre " << argv[1] << "e m4.pgm: " << m4_corr_max << endl;
+    cout << "Maior correlacao entre " << argv[1] << " e m2.pgm: " << m2_corr_max << endl;
+    cout << "Maior correlacao entre " << argv[1] << " e m3.pgm: " << m3_corr_max << endl;
+    cout << "Maior correlacao entre " << argv[1] << " e m4.pgm: " << m4_corr_max << endl;
 
     //7) Coletar distorção de escala (fator(i)) e de rotacao(graus(i)) e deslocamento (desloc(i,j))
     //      Imprimir saída do formato : " melhorModelo=2 corr= 0.147 graus= 0.750 fator= 1.006 desloc(x,y)=[ -2, -2] "
@@ -335,7 +350,14 @@ int main(int argc, char **argv)
     Mat_<FLT> Q_cinza = Q.clone();
     copyMakeBorder(Q_cinza, Q_cinza, cor_ver, cor_ver, cor_hor, cor_hor, BORDER_CONSTANT, Scalar(cinza));
 
-    //resize(A_cor, A_cor, Size(Q.cols, Q.rows), INTER_NEAREST);
+    if ( deslocamentox < 0){
+        deslocamentox  = (-1)*deslocamentox;
+    }
+
+    
+    if ( deslocamentoy < 0){
+        deslocamentoy  = (-1)*deslocamentoy;
+    }
 
     for (int l = cor_ver; l < Q_cinza.rows - cor_ver; l++)
     {
@@ -343,15 +365,15 @@ int main(int argc, char **argv)
         {
             if (Q_cinza(l, c) == 0) // Pintando de vermelho
             {                       //foi utilizada uma tolerância Epsilon = 0.1
-                A_cor(l - deslocamentox, c - deslocamentoy)[0] /= 2;
-                A_cor(l - deslocamentox, c - deslocamentoy)[1] /= 2;
-                A_cor(l - deslocamentox, c - deslocamentoy)[2] = 255; //componente vermelha
+                A_cor(l + deslocamentox, c + deslocamentoy)[0] /= 2;
+                A_cor(l + deslocamentox, c + deslocamentoy)[1] /= 2;
+                A_cor(l + deslocamentox, c + deslocamentoy)[2] = 255; //componente vermelha
             }
             else if (Q_cinza(l, c) != 1) //Pintando de azul
             {
-                A_cor(l - deslocamentox, c - deslocamentoy)[0] = 255; //componente azul
-                A_cor(l - deslocamentox, c - deslocamentoy)[1] /= 2;
-                A_cor(l - deslocamentox, c - deslocamentoy)[2] /= 2;
+                A_cor(l + deslocamentox, c + deslocamentoy)[0] = 255; //componente azul
+                A_cor(l + deslocamentox, c + deslocamentoy)[1] /= 2;
+                A_cor(l + deslocamentox, c + deslocamentoy)[2] /= 2;
             }
         }
     }

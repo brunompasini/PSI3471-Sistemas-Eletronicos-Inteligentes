@@ -52,7 +52,6 @@ int main(int argc, char **argv)
 
     Mat_<FLT> A; //A = canhoto redimensionado
     resize(canhoto, A, Size(0, 0), 750.0 / canhoto.cols, 750.0 / canhoto.cols, INTER_NEAREST);
-    //OBS: NÃO FUNCIONA SE IMAGEM TIVER COLUNAS > 750
 
     //A = canhoto redimensionado e Q = canhoto padrão
     //3) Colocar A no centro de uma moldura cinza (128/255) 310x1150
@@ -82,17 +81,17 @@ int main(int argc, char **argv)
     Mat_<FLT> m2_moldura; //(210,1050);
 
     copyMakeBorder(m2, m2_moldura, Q_ver, Q_ver, Q_hor, Q_hor, BORDER_CONSTANT, cinza);
-    imp(m2_moldura, "m2_moldura.png");
+    //imp(m2_moldura, "m2_moldura.png");
 
     Mat_<FLT> m3_moldura; //(210,1050);
 
     copyMakeBorder(m3, m3_moldura, Q_ver, Q_ver, Q_hor, Q_hor, BORDER_CONSTANT, cinza);
-    imp(m3_moldura, "m3_moldura.png");
+    //imp(m3_moldura, "m3_moldura.png");
 
     Mat_<FLT> m4_moldura; //(210,1050);
 
     copyMakeBorder(m4, m4_moldura, Q_ver, Q_ver, Q_hor, Q_hor, BORDER_CONSTANT, cinza);
-    imp(m4_moldura, "m4_moldura.png");
+    //imp(m4_moldura, "m4_moldura.png");
 
     //4.3) Gerar vector< Mat_<FLT> >  todas as combinações de Q redimensionadas nas escalas de 0,88 a 1,1 (21 passos - PG - q = 1.01068253859)
     //                                                                              e rotacionadas de -3 a +3 graus (17 passos - PA r = 0,3529411).
@@ -107,7 +106,6 @@ int main(int argc, char **argv)
     double corr_m2_max[21 * 17];
     int deslocamentox_m2[21 * 17];
     int deslocamentoy_m2[21 * 17];
-    //indice(corr_m2_med) / 17: Quociente = i, Resto = j
 
     int ind = 0;
 
@@ -148,7 +146,6 @@ int main(int argc, char **argv)
     double corr_m3_max[21 * 17];
     int deslocamentox_m3[21 * 17];
     int deslocamentoy_m3[21 * 17];
-    //indice(corr_m3_med) / 17: Quociente = i, Resto = j
 
     ind = 0;
 
@@ -175,7 +172,6 @@ int main(int argc, char **argv)
             cv::minMaxLoc(corr_temp, &min, &max, &minLoc, &maxLoc);
 
             corr_m3_max[ind] = max;
-            //cout << "corr_m3_max = " << corr_m3_max[ind] << endl;
 
             deslocamentox_m3[ind] = maxLoc.x - corr_temp.cols / 2.0;
 
@@ -189,7 +185,6 @@ int main(int argc, char **argv)
     double corr_m4_max[21 * 17];
     int deslocamentox_m4[21 * 17];
     int deslocamentoy_m4[21 * 17];
-    //indice(corr_m4_med) / 17: Quociente = i, Resto = j
 
     ind = 0;
 
@@ -216,7 +211,6 @@ int main(int argc, char **argv)
             cv::minMaxLoc(corr_temp, &min, &max, &minLoc, &maxLoc);
 
             corr_m4_max[ind] = max;
-            //cout << "corr_m4_max = " << corr_m4_max[ind] << endl;
 
             deslocamentox_m4[ind] = maxLoc.x - corr_temp.cols / 2.0;
 
@@ -228,7 +222,6 @@ int main(int argc, char **argv)
 
     //6) Pegar a maior correção entre os 3 modelos assim como seu índice i
     //      Imprimir saída do formato : " Maior correlacao entre m2_001.jpg e m2.pgm: 0.147 "
-    //indice(corr_m2_med) / 17: Quociente = i, Resto = j
 
     double m2_corr_max = corr_m2_max[0];
     double m3_corr_max = corr_m3_max[0];
@@ -275,7 +268,6 @@ int main(int argc, char **argv)
     {
         if (m2_corr_max > m4_corr_max)
         {
-            //cout << m2_corr_max;
             corr_max = m2_corr_max;
             icorr_max = m2_icorr_max;
             deslocamentox = deslocamentox_m2[icorr_max];
@@ -289,7 +281,6 @@ int main(int argc, char **argv)
     {
         if (m3_corr_max > m4_corr_max)
         {
-            //cout << m3_corr_max;
             corr_max = m3_corr_max;
             icorr_max = m3_icorr_max;
             deslocamentox = deslocamentox_m3[icorr_max];
@@ -302,7 +293,6 @@ int main(int argc, char **argv)
     {
         if (m4_corr_max > m2_corr_max)
         {
-            //cout << m4_corr_max;
             corr_max = m4_corr_max;
             icorr_max = m4_icorr_max;
             deslocamentox = deslocamentox_m4[icorr_max];
@@ -316,13 +306,9 @@ int main(int argc, char **argv)
     int iescalas = icorr_max / 17;
     int irotacao = icorr_max % 17;
 
-    //cout << "iescalas = " << iescalas << endl;
-    //cout << "irotacao = " << irotacao << endl;
-
     cout << "melhorModelo = " << modelo << ", corr = " << corr_max << ", graus = " << rotacao[irotacao] << ", fator = " << escalas[iescalas] << ", desloc(x,y) = "
          << "[ " << deslocamentox << ", " << deslocamentoy << "]" << endl;
 
-    //FALTA SELECIONAR MELHOR MODELO E IMPRIMIR DESLOCAMENTO!
 
     //8) Imprimir imagem inicial
     imp(canhoto, argv[1]);
@@ -333,8 +319,6 @@ int main(int argc, char **argv)
     Mat_<double> m = getRotationMatrix2D(Point2f(Q.cols / 2, Q.rows / 2), rotacao[irotacao], 1);
     warpAffine(Q, Q, m, Q.size(), INTER_LINEAR, BORDER_CONSTANT, Scalar(cinza));
 
-    //cout << "Q.rows = " << Q.rows << " Q.cols = " << Q.cols << endl;
-    //cout << "canhotoA.rows = " << A_moldura.rows << " canhotoA.cols = " << A_moldura.cols << endl;
 
     Mat_<COR> A_cor;
     converte(A_moldura, A_cor);
@@ -368,9 +352,6 @@ int main(int argc, char **argv)
             }
         }
     }
-
-    imp(Q_cor, "Q_cor.png");
-    imp(Q_cinza, "Q_cinza.png");
 
     imp(A_cor, argv[2]);
     // */

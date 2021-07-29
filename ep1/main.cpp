@@ -350,30 +350,21 @@ int main(int argc, char **argv)
     Mat_<FLT> Q_cinza = Q.clone();
     copyMakeBorder(Q_cinza, Q_cinza, cor_ver, cor_ver, cor_hor, cor_hor, BORDER_CONSTANT, Scalar(cinza));
 
-    if ( deslocamentox < 0){
-        deslocamentox  = (-1)*deslocamentox;
-    }
-
-    
-    if ( deslocamentoy < 0){
-        deslocamentoy  = (-1)*deslocamentoy;
-    }
-
     for (int l = cor_ver; l < Q_cinza.rows - cor_ver; l++)
     {
         for (int c = cor_hor; c < Q_cinza.cols - cor_hor; c++)
         {
             if (Q_cinza(l, c) == 0) // Pintando de vermelho
             {                       //foi utilizada uma tolerância Epsilon = 0.1
-                A_cor(l + deslocamentox, c + deslocamentoy)[0] /= 2;
-                A_cor(l + deslocamentox, c + deslocamentoy)[1] /= 2;
-                A_cor(l + deslocamentox, c + deslocamentoy)[2] = 255; //componente vermelha
+                A_cor(l + deslocamentoy, c + deslocamentox)[0] /= 2;
+                A_cor(l + deslocamentoy, c + deslocamentox)[1] /= 2;
+                A_cor(l + deslocamentoy, c + deslocamentox)[2] = 255; //componente vermelha
             }
             else if (Q_cinza(l, c) != 1) //Pintando de azul
             {
-                A_cor(l + deslocamentox, c + deslocamentoy)[0] = 255; //componente azul
-                A_cor(l + deslocamentox, c + deslocamentoy)[1] /= 2;
-                A_cor(l + deslocamentox, c + deslocamentoy)[2] /= 2;
+                A_cor(l + deslocamentoy, c + deslocamentox)[0] = 255; //componente azul
+                A_cor(l + deslocamentoy, c + deslocamentox)[1] /= 2;
+                A_cor(l + deslocamentoy, c + deslocamentox)[2] /= 2;
             }
         }
     }

@@ -9,7 +9,7 @@
 
 Mat_<FLT> newDcReject(Mat_<FLT> a, float dontcare)
 {
-    float epsilon = 0.1;
+    float epsilon = 0.2;
     Mat_<FLT> b = a.clone();
     double sum = 0.0;
     int count = 0;
